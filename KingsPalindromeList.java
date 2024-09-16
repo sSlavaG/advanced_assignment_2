@@ -78,37 +78,6 @@ class KingsPalindromeList {
 
     }
 
-
-    /*
-     * Function that checks whether the given parameter of type long is palindrome.
-     * Returns true if it is palindrome, false if it is not a palindrome
-     * 
-     */
-    private static boolean isPalindrome(long num) {
-        /*
-         * Converting the given number from type Long to type String to 
-         * make use of .charAt method
-         */
-        String numToString = Long.toString(num); 
-
-        int frontPointer = 0;
-        int rearPointer = numToString.length() - 1;
-
-        for (int i = 0; i < numToString.length() / 2; i++) {
-            if (numToString.charAt(frontPointer) != numToString.charAt(rearPointer)) {
-                return false;
-            }
-
-            frontPointer++;
-            rearPointer--;
-            
-
-        }
-
-        return true;
-        
-    }
-
     /*
      * Function that obtains the correct list of palindromes from the given list by
      * replacing each number in the list with the smallest palindrome greater than or equal
@@ -120,14 +89,45 @@ class KingsPalindromeList {
         for (int i = 0; i < array.length; i++) {
             // Variable to store the element of the list in the current iteration
             long currentNumber = array[i];
-            
-            while (!isPalindrome(currentNumber)) {
-                currentNumber++;
+
+            if (currentNumber < 10) {
+                continue;
             }
 
-            array[i] = currentNumber;
+            String strFromCurrentNum = Long.toString(currentNumber);
+
+            String rearSubstring = strFromCurrentNum.substring(
+                strFromCurrentNum.length() / 2 + 1, strFromCurrentNum.length());
+
+            String middleSubstring = strFromCurrentNum.substring(
+                strFromCurrentNum.length() / 2, strFromCurrentNum.length() / 2 + 1);
+            String frontSubstring = strFromCurrentNum.substring(0, strFromCurrentNum.length() / 2);
+            StringBuilder reversedFrontSubstring = new StringBuilder(frontSubstring).reverse();
+
+            String stringPalindrome = "";
 
 
+            if (Long.parseLong(reversedFrontSubstring.toString()) > Long.parseLong(rearSubstring)) {
+                stringPalindrome = frontSubstring + middleSubstring + reversedFrontSubstring;
+
+            } else  if (Long.parseLong(
+                reversedFrontSubstring.toString()) < Long.parseLong(rearSubstring)) {
+                if (Long.parseLong(middleSubstring) != 9) {
+                    middleSubstring = String.valueOf(Long.parseLong(middleSubstring) + 1);
+                    stringPalindrome = frontSubstring + middleSubstring + reversedFrontSubstring;
+
+                } else {
+                    frontSubstring = String.valueOf(Long.parseLong(frontSubstring) + 1);
+                    reversedFrontSubstring = new StringBuilder(frontSubstring).reverse();
+                    middleSubstring = "0";
+                    stringPalindrome = frontSubstring + middleSubstring + reversedFrontSubstring;
+                }
+
+            }
+
+            array[i] = Long.parseLong(stringPalindrome);
+            
+            
         }
 
         return array;
@@ -181,6 +181,8 @@ class KingsPalindromeList {
                  */
                 String substringToCheck = strFromLong.substring(
                     digitIndex, strFromLong.length() - digitIndex);
+
+                
 
                 /*
                  * If substring of the largest palindrome is in the set, add it to the magic set
